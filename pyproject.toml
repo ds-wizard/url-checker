@@ -1,0 +1,26 @@
+# toml
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "url-checker"
+version = "0.1.0"
+description = "Async URL HTML checker"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "janslifka" }]
+dependencies = [
+  "fastapi>=0.95.0",
+  "httpx>=0.24.0",
+  "pydantic>=1.10.0"
+]
+
+[project.optional-dependencies]
+dev = [
+  "uvicorn[standard]>=0.22.0"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
