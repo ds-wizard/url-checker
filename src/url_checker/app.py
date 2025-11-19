@@ -3,9 +3,13 @@ import time
 from typing import List, Optional, Literal
 
 import httpx
-from fastapi import FastAPI
+import jwt
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
+
+from url_checker import config
 
 app = FastAPI()
 
@@ -167,10 +171,38 @@ async def check_many(urls: List[str]) -> List[UrlResult]:
         return results  # type: ignore
 
 
+# ---------- Core checker ----------
+
+def validate_jwt_token(token):
+    if not config.WIZARD_JWT_PUBLIC_KEY:
+        return True
+
+    try:
+        jwt.decode(
+            token,
+            config.WIZARD_JWT_PUBLIC_KEY,
+            algorithms=["RS256"],
+        )
+        return True
+    except jwt.ExpiredSignatureError:
+        return False
+    except jwt.InvalidTokenError:
+        return False
+
+
 # ---------- FastAPI endpoint ----------
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 @app.post("/url-check", response_model=UrlCheckResponse)
-async def url_check(payload: UrlCheck):
+async def url_check(payload: UrlCheck, token: str = Depends(oauth2_scheme)):
+    if not validate_jwt_token(token):
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
     if not payload.urls:
         return UrlCheckResponse(ok_count=0, error_count=0, results=[])
 

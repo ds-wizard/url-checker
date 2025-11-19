@@ -1,0 +1,3 @@
+import os
+
+WIZARD_JWT_PUBLIC_KEY = os.getenv('WIZARD_JWT_PUBLIC_KEY')

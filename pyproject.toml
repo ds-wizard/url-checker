@@ -12,14 +12,16 @@ requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "janslifka" }]
 dependencies = [
-  "fastapi>=0.95.0",
-  "httpx>=0.24.0",
-  "pydantic>=1.10.0"
+    "cryptography>=46.0.3",
+    "fastapi>=0.95.0",
+    "httpx>=0.24.0",
+    "pydantic>=1.10.0",
+    "PyJWT>=2.10.1"
 ]
 
 [project.optional-dependencies]
 dev = [
-  "uvicorn[standard]>=0.22.0"
+    "uvicorn[standard]>=0.22.0"
 ]
 
 [tool.setuptools.packages.find]
